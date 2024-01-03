@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "target": "ES2016",
+    "module": "ES2015",
+    "moduleResolution": "Bundler",
+    "sourceMap": true,
+    "declarationMap": true,
+    "declaration": true,
+    "outDir": "dist"
+  }
+}
