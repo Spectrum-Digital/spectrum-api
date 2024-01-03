@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express'
 class HttpException extends Error {
   statusCode?: number
   status?: number
-  message: string
   error: string | null
 
   constructor(statusCode: number, message: string, error?: string) {
@@ -15,12 +14,7 @@ class HttpException extends Error {
   }
 }
 
-export const errorHandler = (
-  error: HttpException,
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (error: HttpException, _request: Request, response: Response, next: NextFunction) => {
   const status = error.statusCode || error.status || 500
 
   response.status(status).json({

@@ -1,6 +1,7 @@
-import { SpectrumRouter, SpectrumPeriphery, Token, Path, BytesLike, NodeVolatility, DEXRouters } from '@spectrum-digital/spectrum-router'
+import { SpectrumRouter, Token, Path, BytesLike, NodeVolatility, DEXRouters } from '@spectrum-digital/spectrum-router'
 import { getWeightedNodes } from '../constants/tokens'
-import { SupportedChainId } from '../constants/chains'
+import { SubgraphClient } from './subgraph-client'
+import { SubgraphURLs } from '../constants/subgraphs'
 
 const aerodromeGraphCache = new Map<BytesLike, BytesLike[]>()
 const aerodromeTokensCache = new Map<BytesLike, Token>()
@@ -95,18 +96,19 @@ class RouterAggregator {
   }
 
   private synchronize(): void {
-    this.synchronizeExchange(this.aerodromeRouter, getWeightedNodes(SupportedChainId.BASE))
-    this.synchronizeExchange(this.camelotRouter, getWeightedNodes(SupportedChainId.ARBITRUM))
-    this.synchronizeExchange(this.spookyswapV2Router, getWeightedNodes(SupportedChainId.FANTOM))
+    this.synchronizeExchange(this.aerodromeRouter, SubgraphURLs.AERODROME)
+    this.synchronizeExchange(this.camelotRouter, SubgraphURLs.CAMELOT)
+    // this.synchronizeExchange(this.spookyswapV2Router, SubgraphURLs.SPOOKYSWAP_V2)
   }
 
-  private async synchronizeExchange(router: SpectrumRouter, weightedNodes: BytesLike[]): Promise<void> {
+  private async synchronizeExchange(router: SpectrumRouter, subgraphURL: string): Promise<void> {
     // Add weighted nodes
-    router.addWeightedNodes(weightedNodes)
+    const nodes = getWeightedNodes(router.chainId)
+    router.addWeightedNodes(nodes)
 
     // Add pools synchronously, because async messes with cache storage.
-    // const pools = await SpectrumPeriphery.getPools(router.dexRouter)
-    // void (await router.addPools(pools))
+    const pools = await SubgraphClient.getPools(router.dexRouter, subgraphURL)
+    void (await router.addPools(pools))
   }
 }
 

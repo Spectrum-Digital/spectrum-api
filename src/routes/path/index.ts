@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from 'express'
 import z from 'zod'
-import { routerAggregator } from '../../controllers/router'
+
+import { routerAggregator } from '../../controllers/router-aggregator'
 
 export const pathRouter: Router = express.Router()
 
@@ -8,11 +9,9 @@ const ZAddress = z.string()
 const ZChainId = z.coerce.number()
 
 pathRouter.get('/path', async (req: Request, res: Response) => {
-  const url = new URL(req.url)
-  const searchParams = new URLSearchParams(url.search)
-  const tokenIn = ZAddress.safeParse(searchParams.get('tokenIn'))
-  const tokenOut = ZAddress.safeParse(searchParams.get('tokenOut'))
-  const chainId = ZChainId.safeParse(searchParams.get('chainId'))
+  const tokenIn = ZAddress.safeParse(req.query.tokenIn)
+  const tokenOut = ZAddress.safeParse(req.query.tokenOut)
+  const chainId = ZChainId.safeParse(req.query.chainId)
 
   if (!tokenIn.success) {
     return res.status(400).json({ success: false, error: 'Missing required parameter: tokenIn' })

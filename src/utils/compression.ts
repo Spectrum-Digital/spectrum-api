@@ -16,4 +16,3 @@ export function compressFilter(req: Request, res: Response): boolean {
   // fallback to standard filter function
   return compression.filter(req, res)
 }
-
