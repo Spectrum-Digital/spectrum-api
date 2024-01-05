@@ -21,11 +21,11 @@ pathRouter.get('/path', async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, error: 'Missing required parameter: chainId' })
   }
 
-  const routes = await routerAggregator.getAvailablePaths(tokenIn.data, tokenOut.data, chainId.data)
-  if (routes.error) return res.status(400).json({ success: false, error: routes.error })
+  const paths = await routerAggregator.getAvailablePaths(tokenIn.data, tokenOut.data, chainId.data)
+  if (paths.error) return res.status(400).json({ success: false, error: paths.error })
 
   return res.status(200).json({
     success: true,
-    data: routes.paths,
+    data: paths.paths,
   })
 })

@@ -6,87 +6,87 @@ settings:
 
 dependencies:
   '@spectrum-digital/spectrum-router':
-    specifier: ^0.0.11
-    version: 0.0.11(typescript@5.3.3)
+    specifier: 0.0.13
+    version: 0.0.13(typescript@5.3.3)
   compression:
-    specifier: ^1.7.4
+    specifier: 1.7.4
     version: 1.7.4
   cors:
-    specifier: ^2.8.5
+    specifier: 2.8.5
     version: 2.8.5
   dotenv:
-    specifier: ^16.3.1
+    specifier: 16.3.1
     version: 16.3.1
   eslint:
-    specifier: ^8.56.0
+    specifier: 8.56.0
     version: 8.56.0
   express:
-    specifier: ^4.18.2
+    specifier: 4.18.2
     version: 4.18.2
   graphql-request:
-    specifier: ^6.1.0
+    specifier: 6.1.0
     version: 6.1.0(graphql@16.8.1)
   helmet:
-    specifier: ^6.2.0
+    specifier: 6.2.0
     version: 6.2.0
   viem:
-    specifier: ^1.21.4
+    specifier: 1.21.4
     version: 1.21.4(typescript@5.3.3)(zod@3.22.4)
   winston:
-    specifier: ^3.11.0
+    specifier: 3.11.0
     version: 3.11.0
   zod:
-    specifier: ^3.22.4
+    specifier: 3.22.4
     version: 3.22.4
 
 devDependencies:
   '@types/compression':
-    specifier: ^1.7.5
+    specifier: 1.7.5
     version: 1.7.5
   '@types/cors':
-    specifier: ^2.8.17
+    specifier: 2.8.17
     version: 2.8.17
   '@types/express':
-    specifier: ^4.17.21
+    specifier: 4.17.21
     version: 4.17.21
   '@typescript-eslint/eslint-plugin':
-    specifier: ^5.62.0
+    specifier: 5.62.0
     version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.56.0)(typescript@5.3.3)
   '@typescript-eslint/parser':
-    specifier: ^5.62.0
+    specifier: 5.62.0
     version: 5.62.0(eslint@8.56.0)(typescript@5.3.3)
   eslint-config-prettier:
-    specifier: ^8.10.0
+    specifier: 8.10.0
     version: 8.10.0(eslint@8.56.0)
   eslint-config-standard-with-typescript:
-    specifier: ^34.0.1
+    specifier: 34.0.1
     version: 34.0.1(@typescript-eslint/eslint-plugin@5.62.0)(eslint-plugin-import@2.29.1)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.56.0)(typescript@5.3.3)
   eslint-define-config:
-    specifier: ^2.1.0
+    specifier: 2.1.0
     version: 2.1.0
   eslint-plugin-import:
-    specifier: ^2.29.1
+    specifier: 2.29.1
     version: 2.29.1(@typescript-eslint/parser@5.62.0)(eslint@8.56.0)
   eslint-plugin-n:
-    specifier: ^15.7.0
+    specifier: 15.7.0
     version: 15.7.0(eslint@8.56.0)
   eslint-plugin-node:
-    specifier: ^11.1.0
+    specifier: 11.1.0
     version: 11.1.0(eslint@8.56.0)
   eslint-plugin-prettier:
-    specifier: ^5.0.0
+    specifier: 5.0.0
     version: 5.0.0(eslint-config-prettier@8.10.0)(eslint@8.56.0)(prettier@3.1.1)
   eslint-plugin-promise:
-    specifier: ^6.1.1
+    specifier: 6.1.1
     version: 6.1.1(eslint@8.56.0)
   eslint-plugin-unused-imports:
-    specifier: ^3.0.0
+    specifier: 3.0.0
     version: 3.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.56.0)
   prettier:
-    specifier: ^3.1.1
+    specifier: 3.1.1
     version: 3.1.1
   tsup:
-    specifier: ^8.0.1
+    specifier: 8.0.1
     version: 8.0.1(typescript@5.3.3)
   typescript:
     specifier: 5.3.3
@@ -586,8 +586,8 @@ packages:
       '@scure/base': 1.1.5
     dev: false
 
-  /@spectrum-digital/spectrum-router@0.0.11(typescript@5.3.3):
-    resolution: {integrity: sha512-QQsY7VsN5kjOfUXucxeeEurNHg5B8HCK3puxQquk8SM5D5A/RgNcPmsuqeI2DQA868wa/VuMpp5TZQNH8h4Tjw==}
+  /@spectrum-digital/spectrum-router@0.0.13(typescript@5.3.3):
+    resolution: {integrity: sha512-Jmh+j8vQBVd+bVpq4CVY1s6hxoaVDSz2gsBR9bUvzmo0b8idiz7fejFCSjT4IR+inQEaB2sWoZ4GwcyXlozKrw==}
     engines: {node: '>=18.0.0'}
     dependencies:
       bignumber.js: 9.1.2

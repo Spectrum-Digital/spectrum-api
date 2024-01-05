@@ -1,10 +1,18 @@
 import { gql } from 'graphql-request'
 import { z } from 'zod'
 
-export const PoolsQuery = gql`
-  query Pools($factory: String!, $blockNumber: BigInt!, $first: Int!, $skip: Int!) {
+export const generatePoolsQuery = (maxBlockNumber?: number) => gql`
+  query Pools(
+    $factory: String!
+    $minBlockNumber: BigInt!
+    ${maxBlockNumber ? '$maxBlockNumber: BigInt!' : ''} # not required (happens on first query)
+    $first: Int!
+    $skip: Int!
+  ) {
     pools(
-      where: { factory: $factory, blockNumber_gte: $blockNumber }
+      where: { factory: $factory, blockNumber_gte: $minBlockNumber, 
+        ${maxBlockNumber ? 'blockNumber_lte: $maxBlockNumber,' : ''} 
+      }
       first: $first
       skip: $skip
       orderBy: blockNumber
@@ -20,6 +28,11 @@ export const PoolsQuery = gql`
       token1 {
         id
         decimals
+      }
+    }
+    _meta {
+      block {
+        number
       }
     }
   }
@@ -41,4 +54,9 @@ export const PoolsResponse = z.object({
       }),
     }),
   ),
+  _meta: z.object({
+    block: z.object({
+      number: z.number(),
+    }),
+  }),
 })

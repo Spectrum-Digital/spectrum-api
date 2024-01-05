@@ -35,7 +35,14 @@ const WRAPPED: {
   [SupportedChainId.OPTIMISM]: getAddress('0x4200000000000000000000000000000000000006'),
 }
 
-export function getWeightedNodes(chainId: SupportedChainId): BytesLike[] {
+const toChainId = (chainId: number): chainId is SupportedChainId => {
+  return Object.values(SupportedChainId).includes(chainId)
+}
+
+export function getWeightedNodes(_chainId: number): BytesLike[] {
+  const chainId = toChainId(_chainId) ? _chainId : undefined
+  if (!chainId) return []
+
   const stables = STABLE[chainId]
   const wrapped = WRAPPED[chainId]
   return [wrapped, ...Object.values(stables)]
