@@ -16,13 +16,7 @@ logger.info('Applying CORS whitelist: %o', config.cors_origin_whitelist)
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || config.cors_origin_whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
+    origin: config.cors_origin_whitelist,
     credentials: true,
   }),
 )
