@@ -37,7 +37,7 @@ if (!WIGOSWAP_V2_SUBGRAPH_URL) throw new Error('WIGOSWAP_V2_SUBGRAPH_URL not set
 export const config = {
   node_env: NODE_ENV,
   port: PORT,
-  cors_origin_whitelist: CORS_ORIGIN_WHITELIST ? (CORS_ORIGIN_WHITELIST === '*' ? ('*' as const) : CORS_ORIGIN_WHITELIST.split(',')) : [],
+  cors_origin_whitelist: CORS_ORIGIN_WHITELIST ? CORS_ORIGIN_WHITELIST.split(',') : ('*' as const),
   aerodrome_v2_subgraph_url: AERODROME_V2_SUBGRAPH_URL,
   based_v2_subgraph_url: BASED_V2_SUBGRAPH_URL,
   camelot_subgraph_url: CAMELOT_SUBGRAPH_URL,
