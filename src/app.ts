@@ -4,19 +4,21 @@ import helmet from 'helmet'
 import compression from 'compression'
 
 import { compressFilter } from './utils/compression'
-import { config } from './config'
 import { logger } from './services/logger'
 import { errorHandler } from './middleware/error'
 import { notFoundHandler } from './middleware/not-found'
+import { pathsRouter } from './routes/paths'
 import { pathRouter } from './routes/path'
+import { priceRouter } from './routes/price'
+import { serverConfig } from './config'
 
 const app: Express = express()
 
-logger.info('Applying CORS whitelist: %o', config.cors_origin_whitelist)
+logger.info('Applying CORS whitelist: %o', serverConfig.cors_origin_whitelist)
 
 app.use(
   cors({
-    origin: config.cors_origin_whitelist,
+    origin: serverConfig.cors_origin_whitelist,
     credentials: true,
   }),
 )
@@ -29,6 +31,8 @@ app.use(compression({ filter: compressFilter }))
 
 // Routes
 app.use('/v1', pathRouter)
+app.use('/v1', pathsRouter)
+app.use('/v1', priceRouter)
 
 // Error handling
 app.use(errorHandler)

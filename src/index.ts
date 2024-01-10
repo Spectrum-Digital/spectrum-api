@@ -1,9 +1,9 @@
 import app from './app'
-import { config } from './config'
+import { serverConfig } from './config'
 import { logger } from './services/logger'
 
-const server = app.listen(parseInt(config.port), () => {
-  logger.info(`Server is running on Port: ${config.port}`)
+const server = app.listen(parseInt(serverConfig.port), () => {
+  logger.info(`Server is running on Port: ${serverConfig.port}`)
 })
 
 process.on('SIGTERM', () => {

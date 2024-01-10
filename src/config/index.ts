@@ -1,51 +1,56 @@
 import dotenv from 'dotenv'
+import { SupportedChainId } from '../constants/chains'
 
 dotenv.config()
 
-// Required environment variables
-const NODE_ENV = process.env.NODE_ENV
 const PORT = process.env.PORT
-if (!NODE_ENV) throw new Error('NODE_ENV not set')
+const REDIS_URL = process.env.REDIS_URL
+const REDIS_INTERNAL_PREFIX = process.env.REDIS_INTERNAL_PREFIX
+const REDIS_SPECTRUM_PREFIX = process.env.REDIS_SPECTRUM_PREFIX
+const RPC_ARBITRUM = process.env.RPC_ARBITRUM
+const RPC_BASE = process.env.RPC_BASE
+const RPC_BINANCE = process.env.RPC_BINANCE
+const RPC_FANTOM = process.env.RPC_FANTOM
+const RPC_OPTIMISM = process.env.RPC_OPTIMISM
+
 if (!PORT) throw new Error('PORT not set')
+if (!REDIS_URL) throw new Error('REDIS_URL not set')
+if (!REDIS_INTERNAL_PREFIX) throw new Error('REDIS_INTERNAL_PREFIX not set')
+if (!REDIS_SPECTRUM_PREFIX) throw new Error('REDIS_SPECTRUM_PREFIX not set')
+if (!RPC_ARBITRUM) throw new Error('RPC_ARBITRUM not set')
+if (!RPC_BASE) throw new Error('RPC_BASE not set')
+if (!RPC_BINANCE) throw new Error('RPC_BINANCE not set')
+if (!RPC_FANTOM) throw new Error('RPC_FANTOM not set')
+if (!RPC_OPTIMISM) throw new Error('RPC_OPTIMISM not set')
 
-// Optional environment variables
-const CORS_ORIGIN_WHITELIST = process.env.CORS_ORIGIN_WHITELIST
-
-// Subgraph URLs
-const AERODROME_V2_SUBGRAPH_URL = process.env.AERODROME_V2_SUBGRAPH_URL
-const BASED_V2_SUBGRAPH_URL = process.env.BASED_V2_SUBGRAPH_URL
-const CAMELOT_SUBGRAPH_URL = process.env.CAMELOT_SUBGRAPH_URL
-const EQUALIZER_V2_SUBGRAPH_URL = process.env.EQUALIZER_V2_SUBGRAPH_URL
-const EQUALIZER_V3_SUBGRAPH_URL = process.env.EQUALIZER_V3_SUBGRAPH_URL
-const PANCAKESWAP_V2_SUBGRAPH_URL = process.env.PANCAKESWAP_V2_SUBGRAPH_URL
-const RAMSES_SUBGRAPH_URL = process.env.RAMSES_SUBGRAPH_URL
-const SPOOKYSWAP_V2_SUBGRAPH_URL = process.env.SPOOKYSWAP_V2_SUBGRAPH_URL
-const VELODROME_V2_SUBGRAPH_URL = process.env.VELODROME_V2_SUBGRAPH_URL
-const WIGOSWAP_V2_SUBGRAPH_URL = process.env.WIGOSWAP_V2_SUBGRAPH_URL
-
-if (!AERODROME_V2_SUBGRAPH_URL) throw new Error('AERODROME_V2_SUBGRAPH_URL not set')
-if (!BASED_V2_SUBGRAPH_URL) throw new Error('BASED_V2_SUBGRAPH_URL not set')
-if (!CAMELOT_SUBGRAPH_URL) throw new Error('CAMELOT_SUBGRAPH_URL not set')
-if (!EQUALIZER_V2_SUBGRAPH_URL) throw new Error('EQUALIZER_V2_SUBGRAPH_URL not set')
-if (!EQUALIZER_V3_SUBGRAPH_URL) throw new Error('EQUALIZER_V3_SUBGRAPH_URL not set')
-if (!PANCAKESWAP_V2_SUBGRAPH_URL) throw new Error('PANCAKESWAP_V2_SUBGRAPH_URL not set')
-if (!RAMSES_SUBGRAPH_URL) throw new Error('RAMSES_SUBGRAPH_URL not set')
-if (!SPOOKYSWAP_V2_SUBGRAPH_URL) throw new Error('SPOOKYSWAP_V2_SUBGRAPH_URL not set')
-if (!VELODROME_V2_SUBGRAPH_URL) throw new Error('VELODROME_V2_SUBGRAPH_URL not set')
-if (!WIGOSWAP_V2_SUBGRAPH_URL) throw new Error('WIGOSWAP_V2_SUBGRAPH_URL not set')
-
-export const config = {
-  node_env: NODE_ENV,
+export const serverConfig = {
   port: PORT,
-  cors_origin_whitelist: CORS_ORIGIN_WHITELIST ? CORS_ORIGIN_WHITELIST.split(',') : ('*' as const),
-  aerodrome_v2_subgraph_url: AERODROME_V2_SUBGRAPH_URL,
-  based_v2_subgraph_url: BASED_V2_SUBGRAPH_URL,
-  camelot_subgraph_url: CAMELOT_SUBGRAPH_URL,
-  equalizer_v2_subgraph_url: EQUALIZER_V2_SUBGRAPH_URL,
-  equalizer_v3_subgraph_url: EQUALIZER_V3_SUBGRAPH_URL,
-  pancakeswap_v2_subgraph_url: PANCAKESWAP_V2_SUBGRAPH_URL,
-  ramses_subgraph_url: RAMSES_SUBGRAPH_URL,
-  spookyswap_v2_subgraph_url: SPOOKYSWAP_V2_SUBGRAPH_URL,
-  velodrome_v2_subgraph_url: VELODROME_V2_SUBGRAPH_URL,
-  wigoswap_v2_subgraph_url: WIGOSWAP_V2_SUBGRAPH_URL,
+  cors_origin_whitelist: process.env.CORS_ORIGIN_WHITELIST ? process.env.CORS_ORIGIN_WHITELIST.split(',') : ('*' as const),
+}
+
+export const redisConfig = {
+  redis_url: REDIS_URL,
+  redis_spectrum_prefix: REDIS_SPECTRUM_PREFIX,
+  redis_internal_prefix: REDIS_INTERNAL_PREFIX,
+}
+
+export const subgraphURLs = {
+  AERODROME_V2: process.env.AERODROME_V2_SUBGRAPH_URL,
+  BASED_V2: process.env.BASED_V2_SUBGRAPH_URL,
+  CAMELOT: process.env.CAMELOT_SUBGRAPH_URL,
+  EQUALIZER_V2: process.env.EQUALIZER_V2_SUBGRAPH_URL,
+  EQUALIZER_V3: process.env.EQUALIZER_V3_SUBGRAPH_URL,
+  PANCAKESWAP_V2: process.env.PANCAKESWAP_V2_SUBGRAPH_URL,
+  RAMSES: process.env.RAMSES_SUBGRAPH_URL,
+  SPOOKYSWAP_V2: process.env.SPOOKYSWAP_V2_SUBGRAPH_URL,
+  VELODROME_V2: process.env.VELODROME_V2_SUBGRAPH_URL,
+  WIGOSWAP_V2: process.env.WIGOSWAP_V2_SUBGRAPH_URL,
+} as const
+
+export const rpcURLs: { [chainId in SupportedChainId]: string } = {
+  [SupportedChainId.ARBITRUM]: RPC_ARBITRUM,
+  [SupportedChainId.BASE]: RPC_BASE,
+  [SupportedChainId.BINANCE]: RPC_BINANCE,
+  [SupportedChainId.FANTOM]: RPC_FANTOM,
+  [SupportedChainId.OPTIMISM]: RPC_OPTIMISM,
 }
