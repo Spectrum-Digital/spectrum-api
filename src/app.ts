@@ -7,10 +7,10 @@ import { compressFilter } from './utils/compression'
 import { logger } from './services/logger'
 import { errorHandler } from './middleware/error'
 import { notFoundHandler } from './middleware/not-found'
+import { serverConfig } from './config'
 import { pathsRouter } from './routes/paths'
 import { pathRouter } from './routes/path'
 import { priceRouter } from './routes/price'
-import { serverConfig } from './config'
 
 const app: Express = express()
 

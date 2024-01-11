@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@spectrum-digital/spectrum-router':
-    specifier: 0.0.17
-    version: 0.0.17(typescript@5.3.3)
+    specifier: 0.0.18
+    version: 0.0.18(typescript@5.3.3)
   bignumber.js:
     specifier: ^9.1.2
     version: 9.1.2
@@ -596,8 +596,8 @@ packages:
       '@scure/base': 1.1.5
     dev: false
 
-  /@spectrum-digital/spectrum-router@0.0.17(typescript@5.3.3):
-    resolution: {integrity: sha512-o+0QU6/hpktJpoSkpCcZi/tRzZ12mT3xjZKThJ9uCKjKbRfSlqHnobAsFbrR3BF+7TI8CLTkXxXv8QsANzV0LQ==}
+  /@spectrum-digital/spectrum-router@0.0.18(typescript@5.3.3):
+    resolution: {integrity: sha512-ewhhJ+f7Qegj2KNtzlNEv2X1v/KlArbQUr8RfyjJr/GOMYkKEsdAponAS1tS6gehWuYTIhLJNkvR19Rm5RDSMg==}
     engines: {node: '>=18.0.0'}
     dependencies:
       bignumber.js: 9.1.2
