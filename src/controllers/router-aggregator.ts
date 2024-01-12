@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import {
   SpectrumRouter,
   CompressedPath,
@@ -5,19 +6,24 @@ import {
   DEXConfigurations,
   BytesLike,
   SpectrumContract,
+  GetAmountsOutReturn,
 } from '@spectrum-digital/spectrum-router'
 
 import { getWeightedNodes } from '../constants/tokens'
+import { SupportedChainId } from '../constants/chains'
 import { SubgraphClient } from './subgraph-client'
 import { viemController } from './viem-controller'
 import { redisConfig, subgraphURLs } from '../config'
-import { SupportedChainId } from '../constants/chains'
 import { PathCacheController, PriceCacheController } from './cache-controllers'
+import { toNumeric } from '../utils/numbers'
 
 class RouterAggregator {
   private routers: SpectrumRouter[] = []
   private pathCache: PathCacheController
   private priceCache: PriceCacheController
+
+  private readonly UPSCALE_MAXIMUM = 100_000
+  private readonly UPSCALE_STEPSIZE = 10
 
   constructor() {
     this.pathCache = new PathCacheController({ redisURL: redisConfig.redis_url, redisPrefix: redisConfig.redis_internal_prefix })
@@ -91,15 +97,72 @@ class RouterAggregator {
     tokenIn: BytesLike,
     tokenOut: BytesLike,
     chainId: SupportedChainId,
-    amountIn: string, // unscaled
+    amountIn: string, // doesn't need the token decimals
+    upscale = 1,
   ): Promise<CompressedPath | undefined> {
     // Check if we cached our path already
     const cached = await this.pathCache.get(tokenIn, tokenOut, chainId, amountIn)
     if (cached) return cached
 
+    // Validate the amount and upscale it in regards to our retry-policy.
+    const amountInUpscaled = new BigNumber(toNumeric(amountIn)).times(upscale)
+
     // Get the available paths, its internally already cached by the router
     const paths = await this.getAvailablePaths(tokenIn, tokenOut, chainId)
 
+    // If we have no paths available, return undefined
+    if (!paths.length) return undefined
+
+    // Get the amounts out for the paths
+    const parsed = await this.__fetchSpectrumAmountsOut(tokenIn, tokenOut, chainId, amountInUpscaled, paths)
+    if (!parsed) return undefined
+
+    // Retry-policy where getAmountsOut unintendedly rounds to 0 due to a high supply, or low liquidity.
+    if (paths.length > 0 && parsed.amountsOut.isZero() && upscale <= this.UPSCALE_MAXIMUM) {
+      // Note: upscaling does not mean the price scales with, it just means we retry with a
+      // higher amount. The pricing calculation still relies on reserves ratio and liquidity.
+      return await this.getBestPath(tokenIn, tokenOut, chainId, amountInUpscaled.toFixed(), upscale * this.UPSCALE_STEPSIZE)
+    }
+
+    // We're probably dealing with a pool without any liquidity.
+    // Calculate the spot price based on reserves ratio.
+    if (!parsed.path.length) {
+      return undefined
+    }
+
+    // Cache the path
+    await this.pathCache.set(tokenIn, tokenOut, chainId, amountIn, parsed.compressedPath)
+
+    // Return the path
+    return parsed.compressedPath
+  }
+
+  public async getPrice(tokenIn: BytesLike, tokenOut: BytesLike, chainId: SupportedChainId): Promise<string> {
+    // Check if we cached our price already
+    const cached = await this.priceCache.get(tokenIn, tokenOut, chainId)
+    if (cached) return cached
+
+    // Get the best path to get the price for
+    const path = await this.getBestPath(tokenIn, tokenOut, chainId, '1')
+    if (!path) return '0'
+
+    // Get the price
+    const price = await this.__fetchSpectrumPrice(tokenIn, tokenOut, chainId, path)
+
+    // Cache the price
+    await this.priceCache.set(tokenIn, tokenOut, chainId, price.toFixed())
+
+    // Return the price
+    return price.toFixed()
+  }
+
+  private async __fetchSpectrumAmountsOut(
+    tokenIn: BytesLike,
+    tokenOut: BytesLike,
+    chainId: SupportedChainId,
+    amountIn: BigNumber,
+    paths: CompressedPath[],
+  ): Promise<ReturnType<GetAmountsOutReturn['parse']> | undefined> {
     // Draft the params for the contract call
     const params = SpectrumContract.getAmountsOut(chainId, tokenIn, tokenOut, amountIn, paths)
     if (params.error) return undefined
@@ -112,29 +175,19 @@ class RouterAggregator {
       args: params.payload.args,
     })
 
-    // Parse the result
-    const path = params.parse('highest', result)
-    if (!path.path.length) return undefined
-
-    // Cache the path
-    await this.pathCache.set(tokenIn, tokenOut, chainId, amountIn, path.compressedPath)
-
-    // Return the path
-    return path.compressedPath
+    // Parse and return the result
+    return params.parse('highest', result)
   }
 
-  public async getPrice(tokenIn: BytesLike, tokenOut: BytesLike, chainId: SupportedChainId): Promise<string> {
-    // Check if we cached our price already
-    const cached = await this.priceCache.get(tokenIn, tokenOut, chainId)
-    if (cached) return cached
-
-    // Get the best path to get the price for
-    const path = await this.getBestPath(tokenIn, tokenOut, chainId, '1')
-    if (!path) return '0'
-
+  private async __fetchSpectrumPrice(
+    tokenIn: BytesLike,
+    tokenOut: BytesLike,
+    chainId: SupportedChainId,
+    path: CompressedPath,
+  ): Promise<BigNumber> {
     // Draft the params for the contract call
     const params = SpectrumContract.getPrice(chainId, tokenIn, tokenOut, path)
-    if (params.error) return '0'
+    if (params.error) return new BigNumber(0)
 
     // Make the contract call
     const result = await viemController.getClient(chainId).readContract({
@@ -147,11 +200,8 @@ class RouterAggregator {
     // Parse the result
     const { price } = params.parse(result)
 
-    // Cache the price
-    await this.priceCache.set(tokenIn, tokenOut, chainId, price.toFixed())
-
     // Return the price
-    return price.toFixed()
+    return price
   }
 }
 
