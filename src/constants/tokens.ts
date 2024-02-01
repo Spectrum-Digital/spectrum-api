@@ -7,6 +7,7 @@ const WEIGHTED_NODES: {
 } = {
   [SupportedChainId.ARBITRUM]: [
     getAddress('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'), // wETH
+    getAddress('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'), // DAI
     getAddress('0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'), // USDC
   ],
   [SupportedChainId.BASE]: [
@@ -29,6 +30,7 @@ const WEIGHTED_NODES: {
     getAddress('0x74ccbe53F77b08632ce0CB91D3A545bF6B8E0979'), // TEMPORARILY fBOMB
   ],
   [SupportedChainId.OPTIMISM]: [
+    getAddress('0x2E3D870790dC77A83DD1d18184Acc7439A53f475'), // FRAX
     getAddress('0x4200000000000000000000000000000000000006'), // wETH
     getAddress('0x7F5c764cBc14f9669B88837ca1490cCa17c31607'), // USDC
   ],
