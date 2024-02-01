@@ -22,8 +22,8 @@ class RouterAggregator {
   private pathCache: PathCacheController
   private priceCache: PriceCacheController
 
-  private readonly UPSCALE_MAXIMUM = 1_000_000_000 // 5 times
-  private readonly UPSCALE_STEPSIZE = 1000
+  private readonly UPSCALE_STEPSIZE = 10_000
+  private readonly UPSCALE_MAXIMUM = this.UPSCALE_STEPSIZE ^ 4 // 4 attempts
 
   constructor() {
     this.pathCache = new PathCacheController({ redisURL: redisConfig.redis_url, redisPrefix: redisConfig.redis_internal_prefix })
@@ -172,10 +172,6 @@ class RouterAggregator {
       // Draft the params for the contract call
       const params = SpectrumContract.getAmountsOut(chainId, tokenIn, tokenOut, amountIn, paths)
       if (params.error) return undefined
-
-      if (chainId === SupportedChainId.ARBITRUM) {
-        console.log(params.payload.args)
-      }
 
       // Make the contract call
       const result = await viemController.getClient(chainId).readContract({
