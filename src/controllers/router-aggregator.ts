@@ -22,8 +22,8 @@ class RouterAggregator {
   private pathCache: PathCacheController
   private priceCache: PriceCacheController
 
-  private readonly UPSCALE_MAXIMUM = 100_000
-  private readonly UPSCALE_STEPSIZE = 10
+  private readonly UPSCALE_MAXIMUM = 1_000_000_000 // 5 times
+  private readonly UPSCALE_STEPSIZE = 1000
 
   constructor() {
     this.pathCache = new PathCacheController({ redisURL: redisConfig.redis_url, redisPrefix: redisConfig.redis_internal_prefix })
@@ -100,6 +100,9 @@ class RouterAggregator {
     amountIn: string, // doesn't need the token decimals
     upscale = 1,
   ): Promise<CompressedPath | undefined> {
+    // Check if the tokenIn and tokenOut are the same
+    if (tokenIn === tokenOut) return undefined
+
     // Check if we cached our path already
     const cached = await this.pathCache.get(tokenIn, tokenOut, chainId, amountIn)
     if (cached) return cached
@@ -124,8 +127,7 @@ class RouterAggregator {
       return await this.getBestPath(tokenIn, tokenOut, chainId, amountInUpscaled.toFixed(), upscale * this.UPSCALE_STEPSIZE)
     }
 
-    // We're probably dealing with a pool without any liquidity.
-    // Calculate the spot price based on reserves ratio.
+    // We're probably dealing with a pool without any liquidity. Return undefined.
     if (!parsed.path.length) {
       return undefined
     }
@@ -138,6 +140,8 @@ class RouterAggregator {
   }
 
   public async getPrice(tokenIn: BytesLike, tokenOut: BytesLike, chainId: SupportedChainId): Promise<string> {
+    if (tokenIn === tokenOut) return '1'
+
     // Check if we cached our price already
     const cached = await this.priceCache.get(tokenIn, tokenOut, chainId)
     if (cached) return cached
@@ -148,6 +152,7 @@ class RouterAggregator {
 
     // Get the price
     const price = await this.__fetchSpectrumPrice(tokenIn, tokenOut, chainId, path)
+    if (!price) return '0'
 
     // Cache the price
     await this.priceCache.set(tokenIn, tokenOut, chainId, price.toFixed())
@@ -163,20 +168,29 @@ class RouterAggregator {
     amountIn: BigNumber,
     paths: CompressedPath[],
   ): Promise<ReturnType<GetAmountsOutReturn['parse']> | undefined> {
-    // Draft the params for the contract call
-    const params = SpectrumContract.getAmountsOut(chainId, tokenIn, tokenOut, amountIn, paths)
-    if (params.error) return undefined
+    try {
+      // Draft the params for the contract call
+      const params = SpectrumContract.getAmountsOut(chainId, tokenIn, tokenOut, amountIn, paths)
+      if (params.error) return undefined
 
-    // Make the contract call
-    const result = await viemController.getClient(chainId).readContract({
-      address: params.payload.address,
-      abi: params.payload.abi,
-      functionName: params.payload.functionName,
-      args: params.payload.args,
-    })
+      if (chainId === SupportedChainId.ARBITRUM) {
+        console.log(params.payload.args)
+      }
 
-    // Parse and return the result
-    return params.parse('highest', result)
+      // Make the contract call
+      const result = await viemController.getClient(chainId).readContract({
+        address: params.payload.address,
+        abi: params.payload.abi,
+        functionName: params.payload.functionName,
+        args: params.payload.args,
+      })
+
+      // Parse and return the result
+      return params.parse('highest', result)
+    } catch (err) {
+      console.error(tokenIn, tokenOut, chainId, amountIn.toFixed(), paths)
+      return undefined
+    }
   }
 
   private async __fetchSpectrumPrice(
@@ -184,24 +198,29 @@ class RouterAggregator {
     tokenOut: BytesLike,
     chainId: SupportedChainId,
     path: CompressedPath,
-  ): Promise<BigNumber> {
-    // Draft the params for the contract call
-    const params = SpectrumContract.getPrice(chainId, tokenIn, tokenOut, path)
-    if (params.error) return new BigNumber(0)
+  ): Promise<BigNumber | undefined> {
+    try {
+      // Draft the params for the contract call
+      const params = SpectrumContract.getPrice(chainId, tokenIn, tokenOut, path)
+      if (params.error) return new BigNumber(0)
 
-    // Make the contract call
-    const result = await viemController.getClient(chainId).readContract({
-      address: params.payload.address,
-      abi: params.payload.abi,
-      functionName: params.payload.functionName,
-      args: params.payload.args,
-    })
+      // Make the contract call
+      const result = await viemController.getClient(chainId).readContract({
+        address: params.payload.address,
+        abi: params.payload.abi,
+        functionName: params.payload.functionName,
+        args: params.payload.args,
+      })
 
-    // Parse the result
-    const { price } = params.parse(result)
+      // Parse the result
+      const { price } = params.parse(result)
 
-    // Return the price
-    return price
+      // Return the price
+      return price
+    } catch (err) {
+      console.error(err, tokenIn, tokenOut, chainId, path)
+      return undefined
+    }
   }
 }
 

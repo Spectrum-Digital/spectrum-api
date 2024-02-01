@@ -11,6 +11,7 @@ import { serverConfig } from './config'
 import { pathsRouter } from './routes/paths'
 import { pathRouter } from './routes/path'
 import { priceRouter } from './routes/price'
+import { pricesRouter } from './routes/prices'
 
 const app: Express = express()
 
@@ -29,10 +30,14 @@ app.use(helmet())
 // Compression is used to reduce the size of the response body
 app.use(compression({ filter: compressFilter }))
 
+// Body parser
+app.use(express.json())
+
 // Routes
 app.use('/v1', pathRouter)
 app.use('/v1', pathsRouter)
 app.use('/v1', priceRouter)
+app.use('/v1', pricesRouter)
 
 // Error handling
 app.use(errorHandler)

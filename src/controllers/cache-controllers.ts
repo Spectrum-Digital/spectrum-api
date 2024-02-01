@@ -46,7 +46,7 @@ export class PathCacheController extends CacheBase {
 }
 
 export class PriceCacheController extends CacheBase {
-  private readonly EXPIRATION_TIME_SECONDS = 60
+  private readonly EXPIRATION_TIME_SECONDS = 120
 
   constructor(args: BaseConstructor) {
     super({ ...args, type: 'price' })
