@@ -83,18 +83,24 @@ export abstract class SubgraphClient {
     const document = generatePoolsQuery(maxBlockNumber || undefined)
 
     // Get the next 1,000 items
-    const response = await client.request(document, {
-      factory: dexConfiguration.factory_address.toLowerCase(),
-      minBlockNumber,
-      first,
-      skip,
-      ...(maxBlockNumber === 0 ? {} : { maxBlockNumber }),
-    })
+    let response: unknown
+    try {
+      response = await client.request(document, {
+        factory: dexConfiguration.factory_address.toLowerCase(),
+        minBlockNumber,
+        first,
+        skip,
+        ...(maxBlockNumber === 0 ? {} : { maxBlockNumber }),
+      })
+    } catch (err) {
+      console.error('Failed to fetch pools: ', err)
+      return { pools: [], latestBlockNumber: 0 }
+    }
 
     // Type check the response
     const parsed = PoolsResponse.safeParse(response)
     if (!parsed.success) {
-      console.error(parsed.error)
+      console.error('Failed to parse response ', parsed.error)
       return { pools: [], latestBlockNumber: 0 }
     }
 
