@@ -10,7 +10,7 @@
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=9"
+    "pnpm": ">=8"
   },
   "scripts": {
     "dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.js\"",
