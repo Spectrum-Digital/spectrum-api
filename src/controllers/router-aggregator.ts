@@ -48,9 +48,9 @@ class RouterAggregator {
       this.routers.push(this.__createSpectrumRouter(DEXConfigurations.BASE_EQUALIZER_V3, subgraphURLs.EQUALIZER_V3))
     }
 
-    if (subgraphURLs.PANCAKESWAP_V2) {
-      this.routers.push(this.__createSpectrumRouter(DEXConfigurations.BINANCE_PANCAKESWAP_V2, subgraphURLs.PANCAKESWAP_V2))
-    }
+    // if (subgraphURLs.PANCAKESWAP_V2) {
+    //   this.routers.push(this.__createSpectrumRouter(DEXConfigurations.BINANCE_PANCAKESWAP_V2, subgraphURLs.PANCAKESWAP_V2))
+    // }
 
     if (subgraphURLs.BASED_V2) {
       this.routers.push(this.__createSpectrumRouter(DEXConfigurations.FANTOM_BASED_V2, subgraphURLs.BASED_V2))
