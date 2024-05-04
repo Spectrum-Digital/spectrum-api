@@ -64,6 +64,10 @@ class RouterAggregator {
       this.routers.push(this.__createSpectrumRouter(DEXConfigurations.FANTOM_SPOOKYSWAP_V2, subgraphURLs.SPOOKYSWAP_V2))
     }
 
+    if (subgraphURLs.THENA_V2) {
+      this.routers.push(this.__createSpectrumRouter(DEXConfigurations.BINANCE_THENA_V2, subgraphURLs.THENA_V2))
+    }
+
     if (subgraphURLs.WIGOSWAP_V2) {
       this.routers.push(this.__createSpectrumRouter(DEXConfigurations.FANTOM_WIGOSWAP, subgraphURLs.WIGOSWAP_V2))
     }
