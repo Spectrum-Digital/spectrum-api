@@ -104,6 +104,11 @@ class RouterAggregator {
     amountIn: string, // doesn't need the token decimals
     upscale = 1,
   ): Promise<CompressedPath | undefined> {
+    // HACK: OVERRIDES
+    const OVERRIDE_KEY = `${tokenIn}:${tokenOut}`
+    const OVERRIDE_PATH = PATH_OVERRIDES[OVERRIDE_KEY]
+    if (OVERRIDE_PATH) return OVERRIDE_PATH
+
     // Check if the tokenIn and tokenOut are the same
     if (tokenIn === tokenOut) return undefined
 
