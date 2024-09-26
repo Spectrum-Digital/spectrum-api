@@ -16,6 +16,7 @@ import { viemController } from './viem-controller'
 import { redisConfig, subgraphURLs } from '../config'
 import { PathCacheController, PriceCacheController } from './cache-controllers'
 import { toNumeric } from '../utils/numbers'
+import { PATH_OVERRIDES } from './pathing-overrides'
 
 class RouterAggregator {
   private routers: SpectrumRouter[] = []
